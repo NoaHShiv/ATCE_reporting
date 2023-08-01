@@ -1,0 +1,28 @@
+import pandas as pd
+from zipfile import ZipFile
+
+file_name = "2023w17\\2023w17_public.zip"
+  
+# opening the zip file in READ mode
+with ZipFile(file_name, 'r') as zip:
+    # printing all the contents of the zip file
+    zip.printdir()
+    listOfiles = zip.namelist()
+  
+    # extracting all the files
+    print('Extracting all the files now...')
+    zip.extractall()
+    print('Done!')
+
+csv_list = []
+
+for file in listOfiles:
+    csv_list.append(pd.read_csv(file))
+    
+# create a new dataframe to store the
+# merged excel file.
+column_names = csv_list[0].columns.values.tolist()
+csv_list_wIndex = [df.set_index(column_names) for df in csv_list]
+
+csv_merged=pd.concat(csv_list_wIndex, axis=1)
+csv_merged.to_csv('2023w17\\2023w17_CNTCParameters_public_merged.csv')
